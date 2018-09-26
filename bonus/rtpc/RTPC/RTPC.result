@@ -1,0 +1,19 @@
+ ASCII 3
+!File started at: 2018/09/17 21:53:50
+ Degrees of freedom: 
+elfield[electric field:3] :   720315  240105   3 : stat elec solver
+potential                :   240105  240105   1 : stat elec solver
+electric field 1         :   240105  240105   1 : stat elec solver
+electric field 2         :   240105  240105   1 : stat elec solver
+electric field 3         :   240105  240105   1 : stat elec solver
+ Total DOFs:            4
+ Number Of Nodes:       240105
+Time:       1      1  1.00000000E+000
+potential
+Perm:       240105            0
+electric field 1
+Perm: use previous
+electric field 2
+Perm: use previous
+electric field 3
+Perm: use previous

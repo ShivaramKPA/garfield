@@ -35,4 +35,5 @@ which performs the calculation described by the given solver input file
 simulation. To run it do:
 
 > make (it will create a executable called RTPC_garf)
+
 > ./RTPC_garf

@@ -72,9 +72,9 @@ int main(int argc, char * argv[]) {
 //___________________________________________Variables__________________________________________
 //______________________________________________________________________________________________
 
-  const double Bx = 0.; // Tesla
-  const double By = 0.; // Tesla
-  const double Bz = 4.; // Tesla
+  //const double Bx = 0.; // Tesla
+  //const double By = 0.; // Tesla
+  //const double Bz = 4.; // Tesla
 
   // Set the initial position [cm] and starting time [ns].
   double x0 = 3.1, y0 = 0.0, z0 = 10.0, t0 = 0.;
@@ -95,10 +95,10 @@ int main(int argc, char * argv[]) {
 //______________________________________________________________________________________________
 
   TCanvas *c_field = new TCanvas("c_field", "c_field", 800, 600);
-  /*TCanvas *c_driftT = new TCanvas("c_driftT","Drift time",800,600);
+  TCanvas *c_driftT = new TCanvas("c_driftT","Drift time",800,600);
   TCanvas *c_energy = new TCanvas("c_energy","Energy Loss",800,600);
   //TCanvas *c_driftV = new TCanvas("c_driftV","Drift Velocity",800,600);
-  TCanvas *c_phi = new TCanvas("c_phi","Lorentz angle",800,600);*/
+  TCanvas *c_phi = new TCanvas("c_phi","Lorentz angle",800,600);
 
   ViewField *viewfield = new ViewField();
 
@@ -168,7 +168,7 @@ int main(int argc, char * argv[]) {
     
 
 
-  /*for(int eve=0;eve<10;eve++){
+  for(int eve=0;eve<100;eve++){
     ne_tot=0;
     cout << "Event number: " << eve << endl;
     aval->AvalancheElectron(x0, y0, z0, t0, e0, dx0, dy0, dz0);
@@ -188,7 +188,7 @@ int main(int argc, char * argv[]) {
     }
     //if(0<ne_tot) h_size->Fill(ne_tot);
    //   v_e->Plot();
-  }*/
+  }
 
 	cout << "New Solenoid field map" << endl;
 
@@ -200,7 +200,7 @@ int main(int argc, char * argv[]) {
   /*viewfield->SetComponent(bfield);
   viewfield->SetSensor(sensor);
   viewfield->SetCanvas((TCanvas*)c_field->cd());
-    viewfield->PlotProfile(0., 0., 20.0, 0., 0., -20.0);*/
+    viewfield->PlotProfile(0., 0., 20.0, 0., 0., -20.0);
   //viewfield->SetWeightingFieldRange(0.0, 10000.0);
     
     ViewFEMesh* meshView = new ViewFEMesh();
@@ -213,14 +213,14 @@ int main(int argc, char * argv[]) {
     //meshView->SetViewDrift(driftView);
     meshView->SetArea(-8, -8, -20, 8, 8, 20);
     c_field->cd();
-    meshView->Plot();
+    meshView->Plot(); */
     
     
 //  Field plot
   //c_field->cd();
   //viewfield->PlotContour();
     
-  /*c_energy->cd();
+  c_energy->cd();
     h_energy->Draw();
     h_energy->Fit("gausfit","Q");
     h_energy->GetXaxis()->SetTitle("Energy Loss [eV]");
@@ -237,7 +237,7 @@ cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetPar
     h_phi->Draw();
     h_phi->Fit("gausfit","Q");
 cout << "Lorentz angle" << endl;
-cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetParameter(2) << ", Error = " << gausfit->GetParError(2) << endl;*/
+cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetParameter(2) << ", Error = " << gausfit->GetParError(2) << endl;
 
   //c_pos->cd();
   //  h_pos->Draw();

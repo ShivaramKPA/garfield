@@ -548,6 +548,7 @@ void ComponentElmer::ElectricField(const double x, const double y,
   ElectricField(x, y, z, ex, ey, ez, v, m, status);
 }
 
+
 void ComponentElmer::ElectricField(const double xin, const double yin,
                                    const double zin, double& ex, double& ey,
                                    double& ez, double& volt, Medium*& m,
@@ -556,7 +557,6 @@ void ComponentElmer::ElectricField(const double xin, const double yin,
   // Copy the coordinates
   double x = xin, y = yin, z = zin;
 
-    std::cout << "x: " << x << ", y: " << y << ", z: " << z << "\n";
     
   // Map the coordinates onto field map coordinates
   bool xmirr, ymirr, zmirr;
@@ -651,8 +651,21 @@ void ComponentElmer::ElectricField(const double xin, const double yin,
   m = mat.medium;
   status = -5;
   if (mat.driftmedium && m && m->IsDriftable()) status = 0;
-}
+} // End E-field
 
+void ComponentElmer::MagneticField(const double x, const double y, const double z, double& bx, double& by, double& bz, int& status){
+    
+    status = 0;
+    
+    //std::cout << "x: " << x << ", y: " << y << ", z: " << z << std::endl;
+    
+    bx = 0;
+    by = 0;
+    bz = 5;
+    
+    
+}
+    
 void ComponentElmer::WeightingField(const double xin, const double yin,
                                     const double zin, double& wx, double& wy,
                                     double& wz, const std::string& label) {

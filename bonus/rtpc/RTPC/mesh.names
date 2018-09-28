@@ -1,5 +1,5 @@
 ! ----- names for bodies -----
-$ Drift Area = 56
+$ Drift Area = 1
 ! ----- names for boundaries -----
-$ Cathode = 54
-$ Anode = 55
+$ Cathode = 1
+$ Anode = 2

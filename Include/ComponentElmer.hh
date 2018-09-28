@@ -30,8 +30,7 @@ class ComponentElmer : public ComponentFieldMap {
                      double& ey, double& ez, double& v, Medium*& m,
                      int& status) override;
     
-  //void MagneticField(const double x, const double y, const double z, double& bx,
-   //                    double& by, double& bz, int& status) override;
+  void MagneticField(const double x, const double y, const double z, double& bx, double& by, double& bz, int& status) override;
 
   void WeightingField(const double x, const double y, const double z,
                       double& wx, double& wy, double& wz,

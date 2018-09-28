@@ -71,6 +71,9 @@ class ComponentFieldMap : public ComponentBase {
                              double& ex, double& ey, double& ez, double& v,
                              Medium*& m, int& status) override = 0;
 
+  virtual void MagneticField(const double x, const double y, const double z,
+                               double& bx, double& by, double& bz, int& status) override = 0;
+    
   virtual void WeightingField(const double x, const double y, const double z,
                               double& wx, double& wy, double& wz,
                               const std::string& label) override = 0;

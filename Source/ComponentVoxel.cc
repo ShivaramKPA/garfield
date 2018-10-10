@@ -223,7 +223,7 @@ bool ComponentVoxel::LoadElectricField(const std::string& filename,
                   scaleX, scaleE, scaleP, 'e');
 }
 
-bool ComponentVoxel::LoadMagneticField(const std::string& filename, 
+bool ComponentVoxel::LoadMagneticField(const std::string& filename,
                                        const std::string& format,
                                        const double scaleX,
                                        const double scaleB) {

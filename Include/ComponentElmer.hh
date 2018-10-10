@@ -4,6 +4,8 @@
 #define G_COMPONENT_ELMER_H
 
 #include "ComponentFieldMap.hh"
+#include <vector>
+
 
 namespace Garfield {
 
@@ -30,6 +32,10 @@ class ComponentElmer : public ComponentFieldMap {
                      double& ey, double& ez, double& v, Medium*& m,
                      int& status) override;
     
+  /// Import magnetic field values from a file.
+  /// Scale the field with scaleB
+  void LoadMagneticField(const std::string& filename, const double scaleB = 1.);
+ 
   void MagneticField(const double x, const double y, const double z, double& bx, double& by, double& bz, int& status) override;
 
   void WeightingField(const double x, const double y, const double z,
@@ -65,6 +71,24 @@ class ComponentElmer : public ComponentFieldMap {
   double GetElementVolume(const unsigned int i) override;
   void GetAspectRatio(const unsigned int i, 
                       double& dmin, double& dmax) override;
+    
+ private:
+ struct Bvalues {
+    double fx, fy, fz;  //< Field
+ };
+ /// Magnetic field values at each mesh element.
+    
+    std::map < int, Bvalues > r_30mm;
+    std::map < int, Bvalues > r_35mm;
+    std::map < int, Bvalues > r_40mm;
+    std::map < int, Bvalues > r_45mm;
+    std::map < int, Bvalues > r_50mm;
+    std::map < int, Bvalues > r_55mm;
+    std::map < int, Bvalues > r_60mm;
+    std::map < int, Bvalues > r_65mm;
+    std::map < int, Bvalues > r_70mm;
+
+    
 };
 }
 #endif

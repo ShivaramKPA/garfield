@@ -58,8 +58,6 @@
 #include "ComponentVoxel.hh"
 
 
-
-
 using namespace Garfield;
 using namespace std;
 
@@ -77,7 +75,7 @@ int main(int argc, char * argv[]) {
   //const double Bz = 4.; // Tesla
 
   // Set the initial position [cm] and starting time [ns].
-  double x0 = 3.1, y0 = 0.0, z0 = 10.0, t0 = 0.;
+  double x0 = 3.01, y0 = 0.0, z0 = -19.0, t0 = 0.;
   // Set the initial energy [eV].
   double e0 = 36.;
   // Set the initial direction (x, y, z).
@@ -103,10 +101,10 @@ int main(int argc, char * argv[]) {
   ViewField *viewfield = new ViewField();
 
 
-    TH1D *h_driftT = new TH1D("h_driftT","Drit Time 3500 V (He_80_CO2_20)",30,0,0);
+    TH1D *h_driftT = new TH1D("h_driftT","Drit Time [ns] 3500 V (He_80_CO2_20)",30,0,0);
     TH1D *h_energy = new TH1D("h_energy","Energy Loss 3500 V (He_80_CO2_20)",30,0,0);
     //TH1D *h_driftV = new TH1D("h_driftV","Drift Velocity",30,0,0);
-    TH1D *h_phi = new TH1D("h_phi","Lorentz angle 3500 V (He_80_CO2_20)",30,0,0);
+    TH1D *h_phi = new TH1D("h_phi","Drift angle [rad] 3500 V (He_80_CO2_20)",30,0,0);
 
 
   TF1 *gausfit = new TF1("gausfit","gaus",0,8000);
@@ -130,17 +128,10 @@ int main(int argc, char * argv[]) {
   ComponentElmer * elm = new ComponentElmer("RTPC/mesh.header","RTPC/mesh.elements","RTPC/mesh.nodes",
   "RTPC/dielectrics.dat","RTPC/RTPC.result","cm");
   elm->SetMedium(0,gas);
-  
-    
-    // Create a grid for the B-field to sit
-    //ComponentVoxel *bfield = new ComponentVoxel();
-    // SetMesh (num_x, num_y, num_z, x_min, x_max, y_min, y_max, z_min, z_max)
-    //bfield->SetMesh(72, 72, 40, -7, 7, -7, 7, -20, 20);
-    //bfield->LoadElectricField("/Users/nateMac/jlab_software/noarch/data/solenoid_map.dat", "XYZ", false, false, 1., 1., 1.);
+  elm->LoadMagneticField("Fieldmaps/solenoid_map.dat", 1.0);
 
-                              //efield_map.dat", "XYZ", false, false, 1., 1., 1.);
-    //bfield->LoadMagneticField("/Users/nateMac/jlab_software/noarch/data/solenoid_map.dat", "XYZ", 1., 1.);
-    //bfield->SetMedium(0,gas);
+
+
 //______________________________________________________________________________________________
 //_____________________________________________ Code ___________________________________________
 //______________________________________________________________________________________________
@@ -167,8 +158,8 @@ int main(int argc, char * argv[]) {
   aval->EnableMagneticField();
     
 
-
-  for(int eve=0;eve<100;eve++){
+    
+  for(int eve=0;eve<500;eve++){
     ne_tot=0;
     cout << "Event number: " << eve << endl;
     aval->AvalancheElectron(x0, y0, z0, t0, e0, dx0, dy0, dz0);
@@ -182,15 +173,16 @@ int main(int argc, char * argv[]) {
         aval->GetElectronEndpoint(nava, x0, y0, z0, t0, e0, x1, y1, z1, t1, e1, status);
           
         h_driftT->Fill(t1);
-        h_energy->Fill(e0-e1);
-        if(x1>0 || x1<0) h_phi->Fill(TMath::ATan(y1/x1));
+          h_energy->Fill(TMath::Abs(e0-e1));
+        if(x1 != 0) h_phi->Fill(TMath::ATan2(y1,x1));
       }
     }
     //if(0<ne_tot) h_size->Fill(ne_tot);
-   //   v_e->Plot();
+   //   v_e->Plot(); 
   }
-
-	cout << "New Solenoid field map" << endl;
+    cout << "----------------------------------------------------------" << endl;
+	cout << "Start position x = " << x0 << ", z = " << z0 << endl;
+    cout << "----------------------------------------------------------" << endl;
 
 //______________________________________________________________________________________________
 //___________________________________________ Display __________________________________________
@@ -226,18 +218,23 @@ int main(int argc, char * argv[]) {
     h_energy->GetXaxis()->SetTitle("Energy Loss [eV]");
 cout << "Energy Loss" << endl;
 cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetParameter(2) << endl;
+    c_energy->SaveAs("figs/eLoss.png");
 
   c_driftT->cd();
     h_driftT->Draw();
     h_driftT->Fit("gausfit","Q");
+    h_driftT->GetXaxis()->SetTitle("Drift time [ns]");
 cout << "Drift Time" << endl;
 cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetParameter(2) << ", Error = " << gausfit->GetParError(2) << endl;
+    c_driftT->SaveAs("figs/drift_time.png");
 
   c_phi->cd();
     h_phi->Draw();
     h_phi->Fit("gausfit","Q");
-cout << "Lorentz angle" << endl;
+    h_phi->GetXaxis()->SetTitle("Drift angle [rad]");
+cout << "Drift angle" << endl;
 cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetParameter(2) << ", Error = " << gausfit->GetParError(2) << endl;
+    c_phi->SaveAs("figs/drift_angle.png");
 
   //c_pos->cd();
   //  h_pos->Draw();

@@ -32,6 +32,8 @@ which performs the calculation described by the given solver input file
 - RTPC.C and makefile which are the files used for the Garfield 
 simulation. To run it do:
 
-> make (it will create a executable called RTPC_garf)
+> make 
+
+(it will create a executable called RTPC_garf)
 
 > ./garf_RTPC

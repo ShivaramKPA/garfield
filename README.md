@@ -3,9 +3,7 @@
 To compile GMSH, Elmer, and Garfield:
 
 - RTPC.geo which is the file used to define the geometry for the finite 
-element method (FEM). If you want to see the geometry implemented do: 
-
-> gmsh RTPC.geo.
+element method (FEM). 
 
 - RTPC.msh which is the mesh file. The mesh is the list of all finite 
 elements in our geometry. It has been created with:
@@ -36,4 +34,4 @@ simulation. To run it do:
 
 > make (it will create a executable called RTPC_garf)
 
-> ./RTPC_garf
+> ./garf_RTPC

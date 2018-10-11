@@ -78,15 +78,15 @@ class ComponentElmer : public ComponentFieldMap {
  };
  /// Magnetic field values at each mesh element.
     
-    std::map < int, Bvalues > r_30mm;
-    std::map < int, Bvalues > r_35mm;
-    std::map < int, Bvalues > r_40mm;
-    std::map < int, Bvalues > r_45mm;
-    std::map < int, Bvalues > r_50mm;
-    std::map < int, Bvalues > r_55mm;
-    std::map < int, Bvalues > r_60mm;
-    std::map < int, Bvalues > r_65mm;
-    std::map < int, Bvalues > r_70mm;
+    std::map < float, Bvalues > r_30mm;
+    std::map < float, Bvalues > r_35mm;
+    std::map < float, Bvalues > r_40mm;
+    std::map < float, Bvalues > r_45mm;
+    std::map < float, Bvalues > r_50mm;
+    std::map < float, Bvalues > r_55mm;
+    std::map < float, Bvalues > r_60mm;
+    std::map < float, Bvalues > r_65mm;
+    std::map < float, Bvalues > r_70mm;
 
     
 };

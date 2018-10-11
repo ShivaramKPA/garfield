@@ -1,10 +1,10 @@
 p1 = newp;
-Point(p1) = {0.0,0,0,0.5};
+Point(p1) = {0.0,0,-20,0.5};
 //--Cathode foil
-p2 = newp; Point(p2) = {3,0,0,0.5};
-p3 = newp; Point(p3) = {0,3,0,0.5};
-p4 = newp; Point(p4) = {-3,0,0,0.5};
-p5 = newp; Point(p5) = {0,-3,0,0.5};
+p2 = newp; Point(p2) = {3,0,-20,0.5};
+p3 = newp; Point(p3) = {0,3,-20,0.5};
+p4 = newp; Point(p4) = {-3,0,-20,0.5};
+p5 = newp; Point(p5) = {0,-3,-20,0.5};
 
 c1 = newc; Circle(c1) = {p2,p1,p3};
 c2 = newc; Circle(c2) = {p3,p1,p4};
@@ -14,10 +14,10 @@ c4 = newc; Circle(c4) = {p5,p1,p2};
 l1 = newl; Line Loop(l1) = {c1,c2,c3,c4};
 //--
 //--First GEM foil
-p6 = newp; Point(p6) = {7,0,0,0.5};
-p7 = newp; Point(p7) = {0,7,0,0.5};
-p8 = newp; Point(p8) = {-7,0,0,0.5};
-p9 = newp; Point(p9) = {0,-7,0,0.5};
+p6 = newp; Point(p6) = {7,0,-20,0.5};
+p7 = newp; Point(p7) = {0,7,-20,0.5};
+p8 = newp; Point(p8) = {-7,0,-20,0.5};
+p9 = newp; Point(p9) = {0,-7,-20,0.5};
 
 c5 = newc; Circle(c5) = {p6,p1,p7};
 c6 = newc; Circle(c6) = {p7,p1,p8};

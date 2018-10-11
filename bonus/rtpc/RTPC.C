@@ -75,7 +75,7 @@ int main(int argc, char * argv[]) {
   //const double Bz = 4.; // Tesla
 
   // Set the initial position [cm] and starting time [ns].
-  double x0 = 3.1, y0 = 0.0, z0 = 39, t0 = 0.;
+  double x0 = 3.1, y0 = 0.0, z0 = -19.0, t0 = 0.;
   // Set the initial energy [eV].
   double e0 = 36.;
   // Set the initial direction (x, y, z).
@@ -101,10 +101,10 @@ int main(int argc, char * argv[]) {
   ViewField *viewfield = new ViewField();
 
 
-    TH1D *h_driftT = new TH1D("h_driftT","Drit Time [ns] -3500 V (He_80_CO2_20)",30,0,0);
-    TH1D *h_energy = new TH1D("h_energy","Energy Loss -3500 V (He_80_CO2_20)",30,0,0);
+    TH1D *h_driftT = new TH1D("h_driftT","Drit Time [ns] -3500 V (He_80_CO2_20)",50,0,0);
+    TH1D *h_energy = new TH1D("h_energy","Energy Loss -3500 V (He_80_CO2_20)",50,0,0);
     //TH1D *h_driftV = new TH1D("h_driftV","Drift Velocity",30,0,0);
-    TH1D *h_phi = new TH1D("h_phi","Drift angle [rad] -3500 V (He_80_CO2_20)",30,0,0);
+    TH1D *h_phi = new TH1D("h_phi","Drift angle [rad] -3500 V (He_80_CO2_20)",50,0,0);
 
 
   TF1 *gausfit = new TF1("gausfit","gaus",0,8000);
@@ -139,7 +139,7 @@ int main(int argc, char * argv[]) {
 
   // Assemble a Sensor object 
   Sensor* sensor = new Sensor(); 
-  sensor->SetArea(-7.0,-7.0,0.0,7.0,7.0,40.0);
+  sensor->SetArea(-7.0,-7.0,-20.0,7.0,7.0,20.0);
   // Calculate the electric field using the Component object cmp
   sensor->AddComponent(elm);
   //sensor->AddComponent(bfield);

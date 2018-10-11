@@ -17,8 +17,8 @@ CFLAGS = `root-config --cflags` \
 LDFLAGS = -L$(LIBDIR) -lGarfield
 LDFLAGS += `root-config --glibs` -lGeom -lgfortran -lm
 
-RTPC_garf: RTPC.C
+garf_RTPC: RTPC.C
 	$(CXX) $(CFLAGS) -c RTPC.C
-	$(CXX) $(CFLAGS) -o RTPC_garf RTPC.o $(LDFLAGS)
+	$(CXX) $(CFLAGS) -o garf_RTPC RTPC.o $(LDFLAGS)
 	rm RTPC.o
 

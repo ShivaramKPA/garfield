@@ -8,7 +8,7 @@
 // Gabriel Charles
 // gcharles@odu.edu
 //
-// 25 Aug 2018
+// 10 Oct 2018
 //
 ///////////////////////////////////////////
 
@@ -75,7 +75,7 @@ int main(int argc, char * argv[]) {
   //const double Bz = 4.; // Tesla
 
   // Set the initial position [cm] and starting time [ns].
-  double x0 = 3.01, y0 = 0.0, z0 = -19.0, t0 = 0.;
+  double x0 = 3.1, y0 = 0.0, z0 = 39, t0 = 0.;
   // Set the initial energy [eV].
   double e0 = 36.;
   // Set the initial direction (x, y, z).
@@ -92,19 +92,19 @@ int main(int argc, char * argv[]) {
 //________________________________________ Canvas and plots ____________________________________
 //______________________________________________________________________________________________
 
-  TCanvas *c_field = new TCanvas("c_field", "c_field", 800, 600);
+  //TCanvas *c_field = new TCanvas("c_field", "c_field", 800, 600);
   TCanvas *c_driftT = new TCanvas("c_driftT","Drift time",800,600);
-  TCanvas *c_energy = new TCanvas("c_energy","Energy Loss",800,600);
+  //TCanvas *c_energy = new TCanvas("c_energy","Energy Loss",800,600);
   //TCanvas *c_driftV = new TCanvas("c_driftV","Drift Velocity",800,600);
   TCanvas *c_phi = new TCanvas("c_phi","Lorentz angle",800,600);
 
   ViewField *viewfield = new ViewField();
 
 
-    TH1D *h_driftT = new TH1D("h_driftT","Drit Time [ns] 3500 V (He_80_CO2_20)",30,0,0);
-    TH1D *h_energy = new TH1D("h_energy","Energy Loss 3500 V (He_80_CO2_20)",30,0,0);
+    TH1D *h_driftT = new TH1D("h_driftT","Drit Time [ns] -3500 V (He_80_CO2_20)",30,0,0);
+    TH1D *h_energy = new TH1D("h_energy","Energy Loss -3500 V (He_80_CO2_20)",30,0,0);
     //TH1D *h_driftV = new TH1D("h_driftV","Drift Velocity",30,0,0);
-    TH1D *h_phi = new TH1D("h_phi","Drift angle [rad] 3500 V (He_80_CO2_20)",30,0,0);
+    TH1D *h_phi = new TH1D("h_phi","Drift angle [rad] -3500 V (He_80_CO2_20)",30,0,0);
 
 
   TF1 *gausfit = new TF1("gausfit","gaus",0,8000);
@@ -139,7 +139,7 @@ int main(int argc, char * argv[]) {
 
   // Assemble a Sensor object 
   Sensor* sensor = new Sensor(); 
-  sensor->SetArea(-7.0,-7.0,-20.0,7.0,7.0,20.0);
+  sensor->SetArea(-7.0,-7.0,0.0,7.0,7.0,40.0);
   // Calculate the electric field using the Component object cmp
   sensor->AddComponent(elm);
   //sensor->AddComponent(bfield);
@@ -157,9 +157,8 @@ int main(int argc, char * argv[]) {
   //aval->EnablePlotting(v_e);
   aval->EnableMagneticField();
     
-
     
-  for(int eve=0;eve<500;eve++){
+  for(int eve=0;eve<100;eve++){
     ne_tot=0;
     cout << "Event number: " << eve << endl;
     aval->AvalancheElectron(x0, y0, z0, t0, e0, dx0, dy0, dz0);
@@ -212,29 +211,29 @@ int main(int argc, char * argv[]) {
   //c_field->cd();
   //viewfield->PlotContour();
     
-  c_energy->cd();
+ /* c_energy->cd();
     h_energy->Draw();
     h_energy->Fit("gausfit","Q");
     h_energy->GetXaxis()->SetTitle("Energy Loss [eV]");
 cout << "Energy Loss" << endl;
 cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetParameter(2) << endl;
-    c_energy->SaveAs("figs/eLoss.png");
+    c_energy->SaveAs("figs/eLoss.png");*/
 
   c_driftT->cd();
     h_driftT->Draw();
     h_driftT->Fit("gausfit","Q");
-    h_driftT->GetXaxis()->SetTitle("Drift time [ns]");
+    h_driftT->GetXaxis()->SetTitle("t_{d} [ns]");
 cout << "Drift Time" << endl;
 cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetParameter(2) << ", Error = " << gausfit->GetParError(2) << endl;
-    c_driftT->SaveAs("figs/drift_time.png");
+    c_driftT->SaveAs("figs/drift_time_19z.png");
 
   c_phi->cd();
     h_phi->Draw();
     h_phi->Fit("gausfit","Q");
-    h_phi->GetXaxis()->SetTitle("Drift angle [rad]");
+    h_phi->GetXaxis()->SetTitle("#phi_{d} [rad]");
 cout << "Drift angle" << endl;
 cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetParameter(2) << ", Error = " << gausfit->GetParError(2) << endl;
-    c_phi->SaveAs("figs/drift_angle.png");
+    c_phi->SaveAs("figs/drift_angle_19z.png");
 
   //c_pos->cd();
   //  h_pos->Draw();

@@ -716,7 +716,7 @@ void ComponentElmer::LoadMagneticField(const std::string& filename, const double
             
             // magnetic field values in r, z, Bx, By, Bz
             float r_val = split(line, delimiter)[0];
-            int z_val = split(line, delimiter)[1];
+            int z_val = split(line, delimiter)[1]+200; // in mm from 0 to 400
             double bx = split(line, delimiter)[2]*scaleB;
             double by = split(line, delimiter)[3]*scaleB;
             double bz = split(line, delimiter)[4]*scaleB;
@@ -811,7 +811,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
         for(it=r_30mm.begin(); it!=r_30mm.end(); ++it){
             if(it==r_30mm.begin()){
                 auto nxt = next(it, 1);
-                if(z_pos >= -200){
+                if(z_pos >= 0){
                     if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
                     else continue;
                 }
@@ -819,7 +819,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
             }
             else if(it==r_30mm.end()){
                 auto prv = prev(it, 1);
-                if(z_pos <= 200){
+                if(z_pos <= 40){
                     if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
                     else continue;
                 }
@@ -840,7 +840,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
         for(it=r_35mm.begin(); it!=r_35mm.end(); ++it){
             if(it==r_35mm.begin()){
                 auto nxt = next(it, 1);
-                if(z_pos >= -200){
+                if(z_pos >= 0){
                     if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
                     else continue;
                 }
@@ -848,7 +848,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
             }
             else if(it==r_35mm.end()){
                 auto prv = prev(it, 1);
-                if(z_pos <= 200){
+                if(z_pos <= 40){
                     if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
                     else continue;
                 }
@@ -869,7 +869,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
         for(it=r_40mm.begin(); it!=r_40mm.end(); ++it){
             if(it==r_40mm.begin()){
                 auto nxt = next(it, 1);
-                if(z_pos >= -200){
+                if(z_pos >= 0){
                     if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
                     else continue;
                 }
@@ -877,7 +877,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
             }
             else if(it==r_40mm.end()){
                 auto prv = prev(it, 1);
-                if(z_pos <= 200){
+                if(z_pos <= 40){
                     if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
                     else continue;
                 }
@@ -898,7 +898,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
         for(it=r_45mm.begin(); it!=r_45mm.end(); ++it){
             if(it==r_45mm.begin()){
                 auto nxt = next(it, 1);
-                if(z_pos >= -200){
+                if(z_pos >= 0){
                     if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
                     else continue;
                 }
@@ -906,7 +906,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
             }
             else if(it==r_45mm.end()){
                 auto prv = prev(it, 1);
-                if(z_pos <= 200){
+                if(z_pos <= 40){
                     if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
                     else continue;
                 }
@@ -927,7 +927,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
         for(it=r_50mm.begin(); it!=r_50mm.end(); ++it){
             if(it==r_50mm.begin()){
                 auto nxt = next(it, 1);
-                if(z_pos >= -200){
+                if(z_pos >= 0){
                     if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
                     else continue;
                 }
@@ -935,7 +935,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
             }
             else if(it==r_50mm.end()){
                 auto prv = prev(it, 1);
-                if(z_pos <= 200){
+                if(z_pos <= 40){
                     if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
                     else continue;
                 }
@@ -956,7 +956,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
         for(it=r_55mm.begin(); it!=r_55mm.end(); ++it){
             if(it==r_55mm.begin()){
                 auto nxt = next(it, 1);
-                if(z_pos >= -200){
+                if(z_pos >= 0){
                     if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
                     else continue;
                 }
@@ -964,7 +964,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
             }
             else if(it==r_55mm.end()){
                 auto prv = prev(it, 1);
-                if(z_pos <= 200){
+                if(z_pos <= 40){
                     if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
                     else continue;
                 }
@@ -985,7 +985,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
         for(it=r_60mm.begin(); it!=r_60mm.end(); ++it){
             if(it==r_60mm.begin()){
                 auto nxt = next(it, 1);
-                if(z_pos >= -200){
+                if(z_pos >= 0){
                     if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
                     else continue;
                 }
@@ -993,7 +993,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
             }
             else if(it==r_60mm.end()){
                 auto prv = prev(it, 1);
-                if(z_pos <= 200){
+                if(z_pos <= 40){
                     if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
                     else continue;
                 }
@@ -1014,7 +1014,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
         for(it=r_65mm.begin(); it!=r_65mm.end(); ++it){
             if(it==r_65mm.begin()){
                 auto nxt = next(it, 1);
-                if(z_pos >= -200){
+                if(z_pos >= 0){
                     if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
                     else continue;
                 }
@@ -1022,7 +1022,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
             }
             else if(it==r_65mm.end()){
                 auto prv = prev(it, 1);
-                if(z_pos <= 200){
+                if(z_pos <= 40){
                     if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
                     else continue;
                 }
@@ -1043,7 +1043,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
         for(it=r_70mm.begin(); it!=r_70mm.end(); ++it){
             if(it==r_70mm.begin()){
                 auto nxt = next(it, 1);
-                if(z_pos >= -200){
+                if(z_pos >= 0){
                     if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
                     else continue;
                 }
@@ -1051,7 +1051,7 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
             }
             else if(it==r_70mm.end()){
                 auto prv = prev(it, 1);
-                if(z_pos <= 200){
+                if(z_pos <= 40){
                     if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
                     else continue;
                 }

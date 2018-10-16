@@ -36,7 +36,7 @@ simulation. To run it do:
 
 > make 
 
-(it will create a executable called RTPC_garf)
+(it will create a executable called ./garf_RTPC)
 
 > ./garf_RTPC
 

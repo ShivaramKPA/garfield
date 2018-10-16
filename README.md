@@ -1,6 +1,8 @@
 # garfield
+This is a modified vervion of Garfield++ originally from http://garfieldpp.web.cern.ch/garfieldpp/ .
+This version contains the ability to load a CLAS12 azimuthally-symmetric solenoid magnetic field map into the ComponentElmer class.
 
-To compile GMSH, Elmer, and Garfield:
+To compile GMSH, Elmer, and Garfield files for the BONuS12 RTPC - cd to bonus/rtpc, then:
 
 - RTPC.geo which is the file used to define the geometry for the finite 
 element method (FEM). 

@@ -1,4 +1,7 @@
 // Copied and modified ComponentAnsys123.cc
+// 06 Nov 2018
+// Modified to take in Magnetic Field Map
+// Modifications by Nathan Dzbenski
 
 #include <iostream>
 #include <fstream>
@@ -689,29 +692,29 @@ std::vector<double> split(const std::string& str, const std::string& delim)
 void ComponentElmer::LoadMagneticField(const std::string& filename, const double scaleB){
     using namespace std;
     
+    map< pair<float,float>,Bvalues >::iterator itr;
+    
     std::string line;
     string delimiter = ",";
     
     // format is:
-    // r[cm]    z[cm]     Bx[T]    By[T]    Bz[T]
+    // r[cm],z[cm],Bx[T],By[T],Bz[T]
     
     // open the file
     std::ifstream infile;
     infile.open(filename.c_str(), std::ios::in);
     if (!infile) {
-        std::cerr << m_className << "::LoadData:\n"
+        cerr << m_className << "::LoadData:\n"
         << "    Could not open file " << filename << ".\n";
     }
     else {
         cout << "Loading Magnetic Field from: " << filename << endl;
     
-        //vector<Bvalues> m_bfields{};
         Bvalues bfields{};
         
         while (infile) {
             // Read one line.
             getline(infile, line);
-            
             if(line.empty()){continue;}
             
             // magnetic field values in r, z, Bx, By, Bz
@@ -721,72 +724,27 @@ void ComponentElmer::LoadMagneticField(const std::string& filename, const double
             double by = split(line, delimiter)[3]*scaleB;
             double bz = split(line, delimiter)[4]*scaleB;
             
-            if(r_val == 3){
-                bfields.fx = bx;
-                bfields.fy = by;
-                bfields.fz = bz;
-                
-                r_30mm.insert(make_pair(z_val, bfields));
-            }
-            else if(r_val == 3.5){
-                bfields.fx = bx;
-                bfields.fy = by;
-                bfields.fz = bz;
-                
-                r_35mm.insert(make_pair(z_val, bfields));
-            }
-            else if(r_val == 4){
-                bfields.fx = bx;
-                bfields.fy = by;
-                bfields.fz = bz;
-                
-                r_40mm.insert(make_pair(z_val, bfields));
-            }
-            else if(r_val == 4.5){
-                bfields.fx = bx;
-                bfields.fy = by;
-                bfields.fz = bz;
-                
-                r_45mm.insert(make_pair(z_val, bfields));
-            }
-            else if(r_val == 5){
-                bfields.fx = bx;
-                bfields.fy = by;
-                bfields.fz = bz;
-                
-                r_50mm.insert(make_pair(z_val, bfields));
-            }
-            else if(r_val == 5.5){
-                bfields.fx = bx;
-                bfields.fy = by;
-                bfields.fz = bz;
-                
-                r_55mm.insert(make_pair(z_val, bfields));
-            }
-            else if(r_val == 6){
-                bfields.fx = bx;
-                bfields.fy = by;
-                bfields.fz = bz;
-                
-                r_60mm.insert(make_pair(z_val, bfields));
-            }
-            else if(r_val == 6.5){
-                bfields.fx = bx;
-                bfields.fy = by;
-                bfields.fz = bz;
-                
-                r_65mm.insert(make_pair(z_val, bfields));
-            }
-            else if(r_val == 7){
-                bfields.fx = bx;
-                bfields.fy = by;
-                bfields.fz = bz;
-                
-                r_70mm.insert(make_pair(z_val, bfields));
-            }
+            // determine max values
+            if(z_val < z_min) z_min = z_val;
+            if(z_val > z_max) z_max = z_val;
+            if(r_val < r_min) r_min = r_val;
+            if(r_val > r_max) r_max = r_val;
             
-            else{continue;}
+            pair_rz.first = r_val;
+            pair_rz.second = z_val;
             
+            // check to see if r_val and z_val has been stored
+            itr = r_map.find(pair_rz);
+            
+            // store new values
+            if( itr == r_map.end()){
+                bfields.fx = bx;
+                bfields.fy = by;
+                bfields.fz = bz;
+                
+                r_map.insert(make_pair(pair_rz, bfields));
+            }
+            else continue;
         } // end while
         
         infile.close();
@@ -798,283 +756,44 @@ void ComponentElmer::MagneticField(const double x, const double y, const double 
     
     using namespace std;
     
-    float z_min = -20.0;
-    float z_max = 20.0;
+    map< pair<float,float> ,Bvalues >::iterator itr;
+    pair<float,float> pos_pair;
     
-    double fx, fy, fz = 0;
-    std::map<float,Bvalues>::iterator it;
-    
+    auto nxt = itr;
     
     // Take x, y, z and find B-Field from map
     double r_pos = sqrt(x*x + y*y);
     float z_pos = z;
     
-    // use r_30mm map
-    if (r_pos >= 3.0 && r_pos < 3.5){
-        for(it=r_30mm.begin(); it!=r_30mm.end(); ++it){
-            if(it==r_30mm.begin()){
-                auto nxt = next(it, 1);
-                if(z_pos >= z_min){
-                    if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else if(it==r_30mm.end()){
-                auto prv = prev(it, 1);
-                if(z_pos <= z_max){
-                    if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else {
-                auto nxt = next(it, 1);
-                if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                else continue;
-            }
-        }
-        fx = r_30mm.find((int) z_pos)->second.fx;
-        fy = r_30mm.find((int) z_pos)->second.fy;
-        fz = r_30mm.find((int) z_pos)->second.fz;
+    // ensure that the point is within the area
+    if(z_pos < z_min || z_pos > z_max || r_pos < r_min || r_pos > r_max){
+        cout << "Outside of sensitive area." << endl;
     }
-    // use r_35mm map
-    else if (r_pos >= 3.5 && r_pos < 4.0){
-        for(it=r_35mm.begin(); it!=r_35mm.end(); ++it){
-            if(it==r_35mm.begin()){
-                auto nxt = next(it, 1);
-                if(z_pos >= z_min){
-                    if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else if(it==r_35mm.end()){
-                auto prv = prev(it, 1);
-                if(z_pos <= z_max){
-                    if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else {
-                auto nxt = next(it, 1);
-                if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                else continue;
-            }
-        }
-        fx = r_35mm.find((int) z_pos)->second.fx;
-        fy = r_35mm.find((int) z_pos)->second.fy;
-        fz = r_35mm.find((int) z_pos)->second.fz;
-    }
-    // use r_40mm map
-    else if (r_pos >= 4.0 && r_pos < 4.5){
-        for(it=r_40mm.begin(); it!=r_40mm.end(); ++it){
-            if(it==r_40mm.begin()){
-                auto nxt = next(it, 1);
-                if(z_pos >= z_min){
-                    if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else if(it==r_40mm.end()){
-                auto prv = prev(it, 1);
-                if(z_pos <= z_max){
-                    if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else {
-                auto nxt = next(it, 1);
-                if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                else continue;
-            }
-        }
-        fx = r_40mm.find((int) z_pos)->second.fx;
-        fy = r_40mm.find((int) z_pos)->second.fy;
-        fz = r_40mm.find((int) z_pos)->second.fz;
-    }
-    // use r_45mm map
-    else if (r_pos >= 4.5 && r_pos < 5.0){
-        for(it=r_45mm.begin(); it!=r_45mm.end(); ++it){
-            if(it==r_45mm.begin()){
-                auto nxt = next(it, 1);
-                if(z_pos >= z_min){
-                    if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else if(it==r_45mm.end()){
-                auto prv = prev(it, 1);
-                if(z_pos <= z_max){
-                    if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else {
-                auto nxt = next(it, 1);
-                if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                else continue;
-            }
-        }
-        fx = r_45mm.find((int) z_pos)->second.fx;
-        fy = r_45mm.find((int) z_pos)->second.fy;
-        fz = r_45mm.find((int) z_pos)->second.fz;
-    }
-    // use r_50mm map
-    else if (r_pos >= 5.0 && r_pos < 5.5){
-        for(it=r_50mm.begin(); it!=r_50mm.end(); ++it){
-            if(it==r_50mm.begin()){
-                auto nxt = next(it, 1);
-                if(z_pos >= z_min){
-                    if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else if(it==r_50mm.end()){
-                auto prv = prev(it, 1);
-                if(z_pos <= z_max){
-                    if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else {
-                auto nxt = next(it, 1);
-                if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                else continue;
-            }
-        }
-        fx = r_50mm.find((int) z_pos)->second.fx;
-        fy = r_50mm.find((int) z_pos)->second.fy;
-        fz = r_50mm.find((int) z_pos)->second.fz;
-    }
-    // use r_55mm map
-    else if (r_pos >= 5.5 && r_pos < 6.0){
-        for(it=r_55mm.begin(); it!=r_55mm.end(); ++it){
-            if(it==r_55mm.begin()){
-                auto nxt = next(it, 1);
-                if(z_pos >= z_min){
-                    if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else if(it==r_55mm.end()){
-                auto prv = prev(it, 1);
-                if(z_pos <= z_max){
-                    if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else {
-                auto nxt = next(it, 1);
-                if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                else continue;
-            }
-        }
-        fx = r_55mm.find((int) z_pos)->second.fx;
-        fy = r_55mm.find((int) z_pos)->second.fy;
-        fz = r_55mm.find((int) z_pos)->second.fz;
-    }
-    // use r_60mm map
-    else if (r_pos >= 6.0 && r_pos < 6.5){
-        for(it=r_60mm.begin(); it!=r_60mm.end(); ++it){
-            if(it==r_60mm.begin()){
-                auto nxt = next(it, 1);
-                if(z_pos >= z_min){
-                    if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else if(it==r_60mm.end()){
-                auto prv = prev(it, 1);
-                if(z_pos <= z_max){
-                    if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else {
-                auto nxt = next(it, 1);
-                if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                else continue;
-            }
-        }
-        fx = r_60mm.find((int) z_pos)->second.fx;
-        fy = r_60mm.find((int) z_pos)->second.fy;
-        fz = r_60mm.find((int) z_pos)->second.fz;
-    }
-    // use r_65mm map
-    else if (r_pos >= 6.5 && r_pos < 7.0){
-        for(it=r_65mm.begin(); it!=r_65mm.end(); ++it){
-            if(it==r_65mm.begin()){
-                auto nxt = next(it, 1);
-                if(z_pos >= z_min){
-                    if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else if(it==r_65mm.end()){
-                auto prv = prev(it, 1);
-                if(z_pos <= z_max){
-                    if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else {
-                auto nxt = next(it, 1);
-                if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                else continue;
-            }
-        }
-        fx = r_65mm.find((int) z_pos)->second.fx;
-        fy = r_65mm.find((int) z_pos)->second.fy;
-        fz = r_65mm.find((int) z_pos)->second.fz;
-    }
-    // use r_30mm map
-    else if (r_pos >= 7.0){
-        for(it=r_70mm.begin(); it!=r_70mm.end(); ++it){
-            if(it==r_70mm.begin()){
-                auto nxt = next(it, 1);
-                if(z_pos >= z_min){
-                    if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else if(it==r_70mm.end()){
-                auto prv = prev(it, 1);
-                if(z_pos <= z_max){
-                    if(z_pos <= it->first && z_pos > prv->first) z_pos=prv->first;
-                    else continue;
-                }
-                else {cout << "Outside of sensitive area.";}
-            }
-            else {
-                auto nxt = next(it, 1);
-                if(z_pos >= it->first && z_pos < nxt->first) z_pos=it->first;
-                else continue;
-            }
-        }
-        fx = r_70mm.find((int) z_pos)->second.fx;
-        fy = r_70mm.find((int) z_pos)->second.fy;
-        fz = r_70mm.find((int) z_pos)->second.fz;
-    }
-    else{cout << "No magnetic field for point: " << r_pos << "  " << z_pos << endl; fx = fy = fy = 0;}
     
-    bx = fx;
-    by = fy;
-    bz = fz;
+    // assign positions within the map
+    for(itr=r_map.begin(); itr!=r_map.end(); ++itr){
+        if(itr!=r_map.end()) {nxt = next(itr, 1);}
+        
+        // assign r-position
+        if(r_pos >= itr->first.first && r_pos < nxt->first.first){
+            pos_pair.first = itr->first.first;
+        }
+        else continue;
+    }
+    
+    for(itr=r_map.begin(); itr!=r_map.end(); ++itr){
+        if(itr!=r_map.end()) {nxt = next(itr, 1);}
+        
+        // assign z-position
+        if(z_pos >= itr->first.second && nxt->first.second){
+            pos_pair.second = itr->first.second;
+        }
+        else continue;
+    }
+    
+    bx = r_map.find(pos_pair)->second.fx;
+    by = r_map.find(pos_pair)->second.fy;
+    bz = r_map.find(pos_pair)->second.fz;
     
     status = 0;
     

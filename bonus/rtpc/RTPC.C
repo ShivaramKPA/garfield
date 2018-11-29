@@ -8,11 +8,9 @@
 // Gabriel Charles
 // gcharles@odu.edu
 //
-// 10 Oct 2018
+// 08 Nov 2018
 //
 ///////////////////////////////////////////
-
-
 
 #include <iostream>
 #include <stdio.h>
@@ -158,7 +156,7 @@ int main(int argc, char * argv[]) {
   aval->EnableMagneticField();
     
     
-  for(int eve=0;eve<100;eve++){
+  for(int eve=0;eve<1;eve++){
     ne_tot=0;
     cout << "Event number: " << eve << endl;
     aval->AvalancheElectron(x0, y0, z0, t0, e0, dx0, dy0, dz0);

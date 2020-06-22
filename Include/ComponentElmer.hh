@@ -94,6 +94,7 @@ class ComponentElmer : public ComponentFieldMap {
     std::map < float, Bvalues > r_60mm;
     std::map < float, Bvalues > r_65mm;
     std::map < float, Bvalues > r_70mm;
+    std::map < float, Bvalues > r_75mm;
 
     
 };

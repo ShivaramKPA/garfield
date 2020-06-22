@@ -1,0 +1,14 @@
+!------ Skeleton for body section -----
+Body 1
+  Name = GEM3-RPB Drift Area
+End
+
+!------ Skeleton for boundary section -----
+Boundary Condition 1
+  Name = GEM3
+End
+
+Boundary Condition 2
+  Name = RPB
+End
+

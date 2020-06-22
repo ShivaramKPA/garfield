@@ -1,0 +1,14 @@
+!------ Skeleton for body section -----
+Body 1
+  Name = Drift Area
+End
+
+!------ Skeleton for boundary section -----
+Boundary Condition 1
+  Name = Cathode
+End
+
+Boundary Condition 2
+  Name = Anode
+End
+

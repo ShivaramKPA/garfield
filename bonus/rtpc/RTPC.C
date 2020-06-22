@@ -8,18 +8,25 @@
 // Gabriel Charles
 // gcharles@odu.edu
 //
-// 08 Nov 2018
+// 22 June 2020
 //
 ///////////////////////////////////////////
 
 #include <iostream>
 #include <stdio.h>
 
+#include <map>
+
 #include <TApplication.h>
 #include <TCanvas.h>
 #include <TH1F.h>
 #include <TH2F.h>
+#include <TGraphErrors.h>
+#include <TMultiGraph.h>
+#include <TLegend.h>
 #include <TMath.h>
+#include <TFile.h>
+#include <TTree.h>
 #include <TGeoManager.h>
 #include <TGeoMaterial.h>
 #include <TGeoMedium.h>
@@ -59,11 +66,21 @@
 using namespace Garfield;
 using namespace std;
 
+char tvec_name[15];
+char phivec_name[15];
+
+
+// create the file to store output
+TFile *oFile = new TFile("rtpc_out.root","RECREATE","RTPC output");
+
+// create trees to store info
+TTree *tTree = new TTree("tTree","Tree of drift times");
+TTree *pTree = new TTree("pTree","Tree of drift angles");
+
 int main(int argc, char * argv[]) {
 
   TApplication app("app", &argc, argv);
-
-
+    
 //______________________________________________________________________________________________
 //___________________________________________Variables__________________________________________
 //______________________________________________________________________________________________
@@ -85,29 +102,20 @@ int main(int argc, char * argv[]) {
   // Electron information after the avalanche
   Double_t x1, y1, z1, t1, e1;
   Int_t status;
-
+    
 //______________________________________________________________________________________________
 //________________________________________ Canvas and plots ____________________________________
 //______________________________________________________________________________________________
 
-  //TCanvas *c_field = new TCanvas("c_field", "c_field", 800, 600);
-  TCanvas *c_driftT = new TCanvas("c_driftT","Drift time",800,600);
-  //TCanvas *c_energy = new TCanvas("c_energy","Energy Loss",800,600);
-  //TCanvas *c_driftV = new TCanvas("c_driftV","Drift Velocity",800,600);
-  TCanvas *c_phi = new TCanvas("c_phi","Lorentz angle",800,600);
+    //ViewField *viewfield = new ViewField();
 
-  ViewField *viewfield = new ViewField();
-
-
-    TH1D *h_driftT = new TH1D("h_driftT","Drit Time [ns] -3500 V (He_80_CO2_20)",50,0,0);
-    TH1D *h_energy = new TH1D("h_energy","Energy Loss -3500 V (He_80_CO2_20)",50,0,0);
-    //TH1D *h_driftV = new TH1D("h_driftV","Drift Velocity",30,0,0);
-    TH1D *h_phi = new TH1D("h_phi","Drift angle [rad] -3500 V (He_80_CO2_20)",50,0,0);
-
-
-  TF1 *gausfit = new TF1("gausfit","gaus",0,8000);
-
-
+    vector<double> drift_times[9][9];
+    vector<double> drift_angles[9][9];
+    
+    double zeros[9] = {0,0,0,0,0,0,0,0,0};
+    double the_rs[9] = {3.1,3.5,4.0,4.5,5.0,5.5,6.0,6.5,6.9};
+    double the_zs[9] = {-19.0,-15.0,-10.0,-5.0,0.0,5.0,10.0,15.0,19.0};
+    
 //_____________________________________________________________________________________________
 //___________________________________________ Openings ________________________________________
 //_____________________________________________________________________________________________
@@ -118,16 +126,15 @@ int main(int argc, char * argv[]) {
   gas->SetComposition("He",80.,"CO2",20.);
   gas->SetTemperature(293.);
   gas->SetPressure(760.);
-    gas->EnableDrift();                           // Allow for drifting in this medium
+  gas->EnableDrift();                           // Allow for drifting in this medium
   gas->PrintGas();
-
 
   // Import an Elmer-created LEM and the weighting field for the readout electrode.
   ComponentElmer * elm = new ComponentElmer("RTPC/mesh.header","RTPC/mesh.elements","RTPC/mesh.nodes",
   "RTPC/dielectrics.dat","RTPC/RTPC.result","cm");
   elm->SetMedium(0,gas);
-  elm->LoadMagneticField("Fieldmaps/solenoid_map.dat", 1.0);
-
+  // max B-field is 5.22 T
+  elm->LoadMagneticField("Fieldmaps/solenoid_map_may2019.dat", 0.778);
 
 
 //______________________________________________________________________________________________
@@ -155,37 +162,52 @@ int main(int argc, char * argv[]) {
   //aval->EnablePlotting(v_e);
   aval->EnableMagneticField();
     
-    
-  for(int eve=0;eve<1;eve++){
-    ne_tot=0;
-    cout << "Event number: " << eve << endl;
-    aval->AvalancheElectron(x0, y0, z0, t0, e0, dx0, dy0, dz0);
-      
-    // Get the number of electrons and ions in the avalanche.
-    aval->GetAvalancheSize(ne, ni);
-    ne_tot+=ne;
-      
-    if(0<aval->GetNumberOfElectronEndpoints()){
-      for(int nava=0;nava<aval->GetNumberOfElectronEndpoints();nava++){
-        aval->GetElectronEndpoint(nava, x0, y0, z0, t0, e0, x1, y1, z1, t1, e1, status);
-          
-        h_driftT->Fill(t1);
-          h_energy->Fill(TMath::Abs(e0-e1));
-        if(x1 != 0) h_phi->Fill(TMath::ATan2(y1,x1));
-      }
+    // begin the data creation
+    for(int z_i=0; z_i < 9; z_i++){
+        z0 = the_zs[z_i];
+        
+        for(int r_i=0; r_i < 9; r_i++){
+            // Set the initial position [cm] and starting time [ns].
+            x0 = the_rs[r_i];
+            y0 = 0.0;
+            t0 = 0.0;
+            
+            cout << "z = " << z0 << ", r = " << x0 << endl;
+            
+            sprintf(tvec_name,"bTd_%i_%i",z_i,r_i);
+            sprintf(phivec_name,"bPhid_%i_%i",z_i,r_i);
+            
+            // create a branch for each vector
+            tTree->Branch(tvec_name, &drift_times[z_i][r_i]);
+            pTree->Branch(phivec_name, &drift_angles[z_i][r_i]);
+            
+            for(int eve=0;eve<1;eve++){
+                ne_tot=0;
+                cout << "Event number: " << eve << endl;
+                aval->AvalancheElectron(x0, y0, z0, t0, e0, dx0, dy0, dz0);
+                
+                // Get the number of electrons and ions in the avalanche.
+                aval->GetAvalancheSize(ne, ni);
+                ne_tot+=ne;
+                
+                if(0<aval->GetNumberOfElectronEndpoints()){
+                    for(int nava=0;nava<aval->GetNumberOfElectronEndpoints();nava++){
+                        aval->GetElectronEndpoint(nava, x0, y0, z0, t0, e0, x1, y1, z1, t1, e1, status);
+                        
+                        drift_times[z_i][r_i].push_back(t1);
+                        if(x1 != 0)drift_angles[z_i][r_i].push_back(TMath::ATan2(y1,x1));
+                    }
+                }
+            }
+        }
     }
-    //if(0<ne_tot) h_size->Fill(ne_tot);
-   //   v_e->Plot(); 
-  }
-    cout << "----------------------------------------------------------" << endl;
-	cout << "Start position x = " << x0 << ", z = " << z0 << endl;
-    cout << "----------------------------------------------------------" << endl;
-
-//______________________________________________________________________________________________
-//___________________________________________ Display __________________________________________
-//______________________________________________________________________________________________
-
-
+    tTree->Fill();
+    pTree->Fill();
+    
+    oFile->Write();
+    oFile->Close();
+    
+    
   /*viewfield->SetComponent(bfield);
   viewfield->SetSensor(sensor);
   viewfield->SetCanvas((TCanvas*)c_field->cd());
@@ -209,35 +231,7 @@ int main(int argc, char * argv[]) {
   //c_field->cd();
   //viewfield->PlotContour();
     
- /* c_energy->cd();
-    h_energy->Draw();
-    h_energy->Fit("gausfit","Q");
-    h_energy->GetXaxis()->SetTitle("Energy Loss [eV]");
-cout << "Energy Loss" << endl;
-cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetParameter(2) << endl;
-    c_energy->SaveAs("figs/eLoss.png");*/
-
-  c_driftT->cd();
-    h_driftT->Draw();
-    h_driftT->Fit("gausfit","Q");
-    h_driftT->GetXaxis()->SetTitle("t_{d} [ns]");
-cout << "Drift Time" << endl;
-cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetParameter(2) << ", Error = " << gausfit->GetParError(2) << endl;
-    c_driftT->SaveAs("figs/drift_time_19z.png");
-
-  c_phi->cd();
-    h_phi->Draw();
-    h_phi->Fit("gausfit","Q");
-    h_phi->GetXaxis()->SetTitle("#phi_{d} [rad]");
-cout << "Drift angle" << endl;
-cout << "Mean = " << gausfit->GetParameter(1) << ", Sigma = " << gausfit->GetParameter(2) << ", Error = " << gausfit->GetParError(2) << endl;
-    c_phi->SaveAs("figs/drift_angle_19z.png");
-
-  //c_pos->cd();
-  //  h_pos->Draw();
-
-
-
-  app.Run(kTRUE);
+  app.Run(kFALSE);
+    return 0;
 
 }

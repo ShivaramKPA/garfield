@@ -1,0 +1,5 @@
+! ----- names for bodies -----
+$ GEM1-GEM2 Drift Area = 1
+! ----- names for boundaries -----
+$ GEM1 = 1
+$ GEM2 = 2

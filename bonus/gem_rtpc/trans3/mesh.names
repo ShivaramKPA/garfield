@@ -1,0 +1,5 @@
+! ----- names for bodies -----
+$ GEM3-RPB Drift Area = 1
+! ----- names for boundaries -----
+$ GEM3 = 1
+$ RPB = 2

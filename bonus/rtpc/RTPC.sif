@@ -57,7 +57,7 @@ End
 ! Cathode
 Boundary Condition 1
   Target Boundaries = 1
-  Potential = -3500
+  Potential = -4400
 End
 
 ! Anode

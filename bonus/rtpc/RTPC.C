@@ -14,6 +14,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <map>
 
@@ -80,6 +81,13 @@ TTree *pTree = new TTree("pTree","Tree of drift angles");
 int main(int argc, char * argv[]) {
 
   TApplication app("app", &argc, argv);
+    
+    if ( !argv[1] ){
+        cout << "You need to execute the program with the number of events to simulate, with: " << endl;
+        cout << "./garf_rtpc [number of events]" << endl;
+        cout << "Where [number of events] is the number of events you want to simulate." << endl;
+        exit(EXIT_FAILURE);
+    }
     
 //______________________________________________________________________________________________
 //___________________________________________Variables__________________________________________
@@ -181,7 +189,7 @@ int main(int argc, char * argv[]) {
             tTree->Branch(tvec_name, &drift_times[z_i][r_i]);
             pTree->Branch(phivec_name, &drift_angles[z_i][r_i]);
             
-            for(int eve=0;eve<1;eve++){
+            for(int eve=0;eve<atoi(argv[1]);eve++){
                 ne_tot=0;
                 cout << "Event number: " << eve << endl;
                 aval->AvalancheElectron(x0, y0, z0, t0, e0, dx0, dy0, dz0);

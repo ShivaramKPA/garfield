@@ -371,29 +371,29 @@ int analysis() {
     //c_dphi->SaveAs("figs/phid_histo.png");
     
     cout << "=================== Here they are, the parameters =====================" << endl;
-    cout << "a1_t = " << fit_at->GetParameter(0) << endl;
-    cout << "a2_t = " << fit_at->GetParameter(1) << endl;
-    cout << "a3_t = " << fit_at->GetParameter(2) << endl;
-    cout << "***************************************" << endl;
-    cout << "b1_t = " << fit_bt->GetParameter(0) << endl;
-    cout << "b2_t = " << fit_bt->GetParameter(1) << endl;
-    cout << "b3_t = " << fit_bt->GetParameter(2) << endl;
-    cout << "***************************************" << endl;
-    cout << "c1_t = " << fit_ct->GetParameter(0) << endl;
-    cout << "c2_t = " << fit_ct->GetParameter(1) << endl;
-    cout << "c3_t = " << fit_ct->GetParameter(2) << endl;
-    cout << "***************************************" << endl;
-    cout << "a1_phi = " << fit_ap->GetParameter(0) << endl;
-    cout << "a2_phi = " << fit_ap->GetParameter(1) << endl;
-    cout << "a3_phi = " << fit_ap->GetParameter(2) << endl;
-    cout << "***************************************" << endl;
-    cout << "b1_phi = " << fit_bp->GetParameter(0) << endl;
-    cout << "b2_phi = " << fit_bp->GetParameter(1) << endl;
-    cout << "b3_phi = " << fit_bp->GetParameter(2) << endl;
-    cout << "***************************************" << endl;
-    cout << "b1_phi = " << fit_cp->GetParameter(0) << endl;
-    cout << "b2_phi = " << fit_cp->GetParameter(1) << endl;
-    cout << "b3_phi = " << fit_cp->GetParameter(2) << endl;
+    cout << "double a_t0 = " << fit_at->GetParameter(0) << ";" << endl;
+    cout << "double a_t1 = " << fit_at->GetParameter(1) << ";" << endl;
+    cout << "double a_t2 = " << fit_at->GetParameter(2) << ";" << endl;
+    
+    cout << "double b_t0 = " << fit_bt->GetParameter(0) << ";" << endl;
+    cout << "double b_t1 = " << fit_bt->GetParameter(1) << ";" << endl;
+    cout << "double b_t2 = " << fit_bt->GetParameter(2) << ";" << endl;
+    
+    cout << "double c_t0 = " << fit_ct->GetParameter(0) << ";" << endl;
+    cout << "double c_t1 = " << fit_ct->GetParameter(1) << ";" << endl;
+    cout << "double c_t2 = " << fit_ct->GetParameter(2) << ";" << endl;
+    
+    cout << "double a_phi0 = " << fit_ap->GetParameter(0) << ";" << endl;
+    cout << "double a_phi1 = " << fit_ap->GetParameter(1) << ";" << endl;
+    cout << "double a_phi2 = " << fit_ap->GetParameter(2) << ";" << endl;
+    
+    cout << "double b_phi0 = " << fit_bp->GetParameter(0) << ";" << endl;
+    cout << "double b_phi1 = " << fit_bp->GetParameter(1) << ";" << endl;
+    cout << "double b_phi2 = " << fit_bp->GetParameter(2) << ";" << endl;
+    
+    cout << "double c_phi0 = " << fit_cp->GetParameter(0) << ";" << endl;
+    cout << "double c_phi1 = " << fit_cp->GetParameter(1) << ";" << endl;
+    cout << "double c_phi2 = " << fit_cp->GetParameter(2) << ";" << endl;
     cout << "======================================================================" << endl;
     
     //for(int i = 0; i < 9; i++){ cout << the_rs[i] << ", " << t_vs_r[i] << endl; }

@@ -1,6 +1,6 @@
 //////////////////////////////////////////
 //
-// Simulation of the BONuS RTPC
+// Simulation of the BONuS RTPC GEM regions
 //
 // Nate Dzbenski
 // ndzbe001@odu.edu
@@ -8,12 +8,13 @@
 // Gabriel Charles
 // gcharles@odu.edu
 //
-// 26 Spet 2019
+// 08 July 2020
 //
 ///////////////////////////////////////////
 
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <map>
 
@@ -76,8 +77,15 @@ char phileg_name[15];
 int main(int argc, char * argv[]) {
 
   TApplication app("app", &argc, argv);
-
-
+    
+    if ( !argv[1] || !argv[2] ){
+        cout << "You need to execute the program with a region specification and number of events to simulate with: " << endl;
+        cout << "./garf_rtpc [region number] [number of events]" << endl;
+        cout << "Where [region number] is 1, 2, or 3 and [number of events] is the number of events you want to simulate." << endl;
+        exit(EXIT_FAILURE);
+    }
+    
+    int region = atoi(argv[1]);
 //______________________________________________________________________________________________
 //___________________________________________Variables__________________________________________
 //______________________________________________________________________________________________
@@ -89,7 +97,7 @@ int main(int argc, char * argv[]) {
   // Set the initial position [cm] and starting time [ns].
   double x0 = 3.1, y0 = 0.0, z0 = -19.0, t0 = 0.;
   // Set the initial energy [eV].
-  double e0 = 36.;
+    double e0 = 36.;
   // Set the initial direction (x, y, z).
   // In case of a null vector, the direction is randomized.
   double dx0 = 0., dy0 = 0., dz0 = 0.;
@@ -149,57 +157,61 @@ int main(int argc, char * argv[]) {
 
   // Setup the gas.
   MediumMagboltz* gas = new MediumMagboltz();
-  gas->SetComposition("He",80.,"CO2",20.);
+  gas->SetComposition("He",85.5,"CO2",14.5);
   gas->SetTemperature(293.);
   gas->SetPressure(760.);
     gas->EnableDrift();                           // Allow for drifting in this medium
   gas->PrintGas();
-
-
-  // Import an Elmer-created LEM and the weighting field for the readout electrode.
-  /*ComponentElmer * elm = new ComponentElmer("RTPC/mesh.header","RTPC/mesh.elements","RTPC/mesh.nodes",
-  "RTPC/dielectrics.dat","RTPC/RTPC.result","cm");
-  elm->SetMedium(0,gas);
-  elm->LoadMagneticField("Fieldmaps/solenoid_map_may2019.dat", 0.78); */
-
-    /*ComponentElmer * elm_trans1 = new ComponentElmer("trans1/mesh.header","trans1/mesh.elements","trans1/mesh.nodes",
-                                              "trans1/dielectrics.dat","trans1/trans1.result","cm");
-    elm_trans1->SetMedium(0,gas);
-    elm_trans1->LoadMagneticField("Fieldmaps/solenoid_map_may2019.dat", 0.78);*/
     
-    /*ComponentElmer * elm_trans2 = new ComponentElmer("trans2/mesh.header","trans2/mesh.elements","trans2/mesh.nodes",
-                                                     "trans2/dielectrics.dat","trans2/trans2.result","cm");
-    elm_trans2->SetMedium(0,gas);
-    elm_trans2->LoadMagneticField("Fieldmaps/solenoid_map_may2019.dat", 0.78);*/
+    float gem_x;
     
-    ComponentElmer * elm_trans3 = new ComponentElmer("trans3/mesh.header","trans3/mesh.elements","trans3/mesh.nodes",
-                                                     "trans3/dielectrics.dat","trans3/trans3.result","cm");
-    elm_trans3->SetMedium(0,gas);
-    elm_trans3->LoadMagneticField("Fieldmaps/solenoid_map_may2019.dat", 0.78);
-
-//______________________________________________________________________________________________
-//_____________________________________________ Code ___________________________________________
-//______________________________________________________________________________________________
-
-
-  // Assemble a Sensor object 
-  Sensor* sensor = new Sensor(); 
-  sensor->SetArea(-8.0,-8.0,-20.0,8.0,8.0,20.0);
-  // Calculate the electric field using the Component object cmp
-  //sensor->AddComponent(elm);
-    //sensor->AddComponent(elm_trans1);
-    //sensor->AddComponent(elm_trans2);
-    sensor->AddComponent(elm_trans3);
+    // Assemble a Sensor object
+    Sensor* sensor = new Sensor();
+    sensor->SetArea(-8.0,-8.0,-20.0,8.0,8.0,20.0);
     
-
+    if (region == 1){
+        gem_x = 7.02;
+        
+        ComponentElmer * elm_trans1 = new ComponentElmer("trans1/mesh.header","trans1/mesh.elements","trans1/mesh.nodes",
+                                                         "trans1/dielectrics.dat","trans1/trans1.result","cm");
+        elm_trans1->SetMedium(0,gas);
+        elm_trans1->LoadMagneticField("Fieldmaps/solenoid_map_may2019.dat", 0.7893);
+        
+        sensor->AddComponent(elm_trans1);
+    }
+    else if (region == 2){
+        gem_x = 7.32;
+        
+        ComponentElmer * elm_trans2 = new ComponentElmer("trans2/mesh.header","trans2/mesh.elements","trans2/mesh.nodes",
+                                                         "trans2/dielectrics.dat","trans2/trans2.result","cm");
+        elm_trans2->SetMedium(0,gas);
+        elm_trans2->LoadMagneticField("Fieldmaps/solenoid_map_may2019.dat", 0.7893);
+        
+        sensor->AddComponent(elm_trans2);
+    }
+    
+    else if (region == 3){
+        gem_x = 7.62;
+        
+        ComponentElmer * elm_trans3 = new ComponentElmer("trans3/mesh.header","trans3/mesh.elements","trans3/mesh.nodes",
+                                                         "trans3/dielectrics.dat","trans3/trans3.result","cm");
+        elm_trans3->SetMedium(0,gas);
+        elm_trans3->LoadMagneticField("Fieldmaps/solenoid_map_may2019.dat", 0.7893);
+        
+        sensor->AddComponent(elm_trans3);
+    }
+    else{
+        cout << "Invalid region" << endl;
+        cout << "Enter a value for region 1, 2, or 3." << endl;
+        exit(EXIT_FAILURE);
+    }
+    
   // Evaluate the number of electrons in the avalanche
   AvalancheMicroscopic* aval = new AvalancheMicroscopic(); // did not get it to work with AvalancheMC()
     aval->SetSensor(sensor);
   aval->EnableMagneticField();
     
     // begin the data analysis
-    // for 0T field use the center of RTPC
-    // that is z_i = 4
     for(int z_i=0; z_i < 9; z_i++){
         
         z0 = the_zs[z_i];
@@ -207,13 +219,13 @@ int main(int argc, char * argv[]) {
         cout << "z = " << z0 << endl;
         
             int r_i = 0;
-            x0 = 7.62;
+            x0 = gem_x;
             y0 = 0.0;
             t0 = 0.0;
             
             cout << "r = " << x0 << endl;
             
-            for(int eve=0;eve<200;eve++){
+            for(int eve=0;eve<atoi(argv[2]);eve++){
                 ne_tot=0;
                 cout << "Event number: " << eve << endl;
                 aval->AvalancheElectron(x0, y0, z0, t0, e0, dx0, dy0, dz0);
@@ -226,8 +238,8 @@ int main(int argc, char * argv[]) {
                     for(int nava=0;nava<aval->GetNumberOfElectronEndpoints();nava++){
                         aval->GetElectronEndpoint(nava, x0, y0, z0, t0, e0, x1, y1, z1, t1, e1, status);
                         
-                        h_driftT[z_i]->Fill(t1);
-                        if(x1 != 0) h_phi[z_i]->Fill(TMath::ATan2(y1,x1));
+                        if(t1>5) h_driftT[z_i]->Fill(t1);
+                        if(x1 > 0.01) h_phi[z_i]->Fill(TMath::ATan2(y1,x1));
                     }
                 }
             }
@@ -259,7 +271,7 @@ int main(int argc, char * argv[]) {
             h_phi[z_i]->Fit("gausfit2","BR");
             h_phi[z_i]->SetTitle(phihisto_title);
             h_phi[z_i]->GetXaxis()->SetTitle("#phi_{d} [rad]");
-            cout << "Drift angle" << endl;
+            cout << "Drift angle: " << h_phi[z_i]->GetMaximum() << endl;
             
             phi_vs_z[z_i] = gausfit2->GetParameter(1);
             sphi_vs_z[z_i] = gausfit2->GetParameter(2);
